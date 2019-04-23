@@ -14,6 +14,8 @@ import com.kefu.netty.handler.QuitGroupRequestHandler;
 import io.netty.channel.ChannelPipeline;
 
 /**
+ * ChannelPipeline工具类
+ *
  * @author feng
  * @date 2019-04-22
  */

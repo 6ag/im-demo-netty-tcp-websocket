@@ -1,7 +1,9 @@
 package com.kefu.netty.server;
 
+import com.kefu.netty.config.NettyProperties;
 import com.kefu.netty.initializer.TcpServerInitializer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -20,7 +22,11 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 @Component
 public class TcpChatServer {
 
-    private static final int PORT = 8888;
+    private int port;
+
+    public TcpChatServer(NettyProperties nettyProperties) {
+        this.port = nettyProperties.getTcp().getPort();
+    }
 
     /**
      * 开始引导服务器
@@ -41,9 +47,9 @@ public class TcpChatServer {
                 // 指定处理新连接数据的读写处理逻辑:每次有新连接到来，都会去执行ChannelInitializer.initChannel()，并new一大堆handler。所以如果handler中无成员变量，则可写成单例
                 .childHandler(new TcpServerInitializer());
 
-        serverBootstrap.bind(PORT).addListener((ChannelFutureListener) future -> {
+        serverBootstrap.bind(port).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                System.out.println("tcp端口绑定成功 port = " + PORT);
+                System.out.println("tcp端口绑定成功 port = " + port);
             } else {
                 System.out.println("tcp端口绑定失败");
             }

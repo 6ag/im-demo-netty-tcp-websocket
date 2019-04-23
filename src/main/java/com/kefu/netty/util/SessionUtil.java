@@ -10,7 +10,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 
 /**
- * Session会话工具类
+ * 会话工具类
  *
  * @author feng
  * @date 2019-04-21

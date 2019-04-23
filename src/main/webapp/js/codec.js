@@ -61,7 +61,7 @@ function stringToBytes(str) {
     let bytes = [];
     let len, c;
     len = str.length;
-    for (var i = 0; i < len; i++) {
+    for (let i = 0; i < len; i++) {
         c = str.charCodeAt(i);
         if (c >= 0x010000 && c <= 0x10FFFF) {
             bytes.push(((c >> 18) & 0x07) | 0xF0);

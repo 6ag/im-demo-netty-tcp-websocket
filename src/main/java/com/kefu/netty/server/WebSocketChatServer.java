@@ -1,12 +1,13 @@
 package com.kefu.netty.server;
 
+import com.kefu.netty.config.NettyProperties;
 import com.kefu.netty.initializer.WebSocketServerInitializer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -20,7 +21,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 @Component
 public class WebSocketChatServer {
 
-    private static final int PORT = 9999;
+    private final WebSocketServerInitializer webSocketServerInitializer;
+    private int port;
+
+    public WebSocketChatServer(NettyProperties nettyProperties, WebSocketServerInitializer webSocketServerInitializer) {
+        this.port = nettyProperties.getWebsocket().getPort();
+        this.webSocketServerInitializer = webSocketServerInitializer;
+    }
 
     /**
      * 开始引导服务器
@@ -39,11 +46,11 @@ public class WebSocketChatServer {
 //                .option(ChannelOption.SO_KEEPALIVE, true)
 //                .option(ChannelOption.TCP_NODELAY, true)
                 // 指定处理新连接数据的读写处理逻辑:每次有新连接到来，都会去执行ChannelInitializer.initChannel()，并new一大堆handler。所以如果handler中无成员变量，则可写成单例
-                .childHandler(new WebSocketServerInitializer());
+                .childHandler(webSocketServerInitializer);
 
-        serverBootstrap.bind(PORT).addListener((ChannelFutureListener) future -> {
+        serverBootstrap.bind(port).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                System.out.println("websocket端口绑定成功 port = " + PORT);
+                System.out.println("websocket端口绑定成功 port = " + port);
             } else {
                 System.out.println("websocket端口绑定失败");
             }

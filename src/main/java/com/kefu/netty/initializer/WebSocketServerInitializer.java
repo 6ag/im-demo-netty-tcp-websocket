@@ -1,6 +1,8 @@
 package com.kefu.netty.initializer;
 
 import com.kefu.netty.codec.WebSocketPacketCodec;
+import com.kefu.netty.config.NettyProperties;
+import com.kefu.netty.handler.IMIdleStateHandler;
 import com.kefu.netty.util.PipelineUtil;
 
 import org.springframework.stereotype.Component;
@@ -22,6 +24,21 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 @Component
 public class WebSocketServerInitializer extends ChannelInitializer<NioSocketChannel> {
 
+    /**
+     * websocket路径
+     */
+    private String websocketPath;
+
+    /**
+     * 最大内容长度
+     */
+    private int maxContentLength;
+
+    public WebSocketServerInitializer(NettyProperties nettyProperties) {
+        this.websocketPath = nettyProperties.getWebsocket().getPath();
+        this.maxContentLength = nettyProperties.getWebsocket().getHttpObjectArrgregator().getMaxContentLength();
+    }
+
     @Override
     protected void initChannel(NioSocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
@@ -30,12 +47,12 @@ public class WebSocketServerInitializer extends ChannelInitializer<NioSocketChan
         // 写文件内容
         pipeline.addLast(new ChunkedWriteHandler());
         // 保证接收的http请求的完整性
-        pipeline.addLast(new HttpObjectAggregator(64 * 1024));
+        pipeline.addLast(new HttpObjectAggregator(maxContentLength));
         // 处理其他的WebSocketFrame
-        pipeline.addLast(new WebSocketServerProtocolHandler("/chat"));
+        pipeline.addLast(new WebSocketServerProtocolHandler(websocketPath));
 
         // 空闲检测
-//        ch.pipeline().addLast(new IMIdleStateHandler());
+        ch.pipeline().addLast(new IMIdleStateHandler());
 
         // WebSocket数据包编解码器
         ch.pipeline().addLast(WebSocketPacketCodec.INSTANCE);

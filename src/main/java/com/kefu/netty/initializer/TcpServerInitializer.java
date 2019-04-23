@@ -25,7 +25,7 @@ public class TcpServerInitializer extends ChannelInitializer<NioSocketChannel> {
         ChannelPipeline pipeline = ch.pipeline();
 
         // 空闲检测
-//        pipeline.addLast(new IMIdleStateHandler());
+        pipeline.addLast(new IMIdleStateHandler());
         // 处理粘包半包
         pipeline.addLast(new TcpSpliter());
         // 数据包编解码器
